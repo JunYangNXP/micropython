@@ -541,6 +541,11 @@ int pyexec_file(const char *filename) {
     return parse_compile_execute(filename, MP_PARSE_FILE_INPUT, EXEC_FLAG_SOURCE_IS_FILENAME);
 }
 
+int pyexec_str(vstr_t *str)
+{
+	return parse_compile_execute(str, MP_PARSE_FILE_INPUT, EXEC_FLAG_SOURCE_IS_VSTR);
+}
+
 #if MICROPY_MODULE_FROZEN
 int pyexec_frozen_module(const char *name) {
     void *frozen_data;

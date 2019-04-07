@@ -331,7 +331,15 @@ FRESULT f_setcp (WORD cp);                                          /* Set curre
 
 /* RTC function */
 #if !FF_FS_READONLY && !FF_FS_NORTC
+#ifdef OMV_SUPPORT
+static inline DWORD get_fattime(void)
+{
+	return ((2000 - 1980 + 17) << 25) | (8) << 21 | ((15) << 16) |
+		((23) << 11) | ((34) << 5) | (45 / 2);
+}
+#else
 DWORD get_fattime (void);
+#endif
 #endif
 
 /* LFN support functions */

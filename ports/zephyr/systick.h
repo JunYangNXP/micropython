@@ -1,9 +1,9 @@
 /*
- * This file is part of the MicroPython project, http://micropython.org/
+ * This file is part of the Micro Python project, http://micropython.org/
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Linaro Limited
+ * Copyright (c) 2013, 2014 Damien P. George
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,55 +23,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-#include <unistd.h>
-#include "py/mpconfig.h"
-#include "src/zephyr_getchar.h"
-// Zephyr headers
-#include <uart.h>
-#include <console.h>
 
-/*
- * Core UART functions to implement for a port
- */
-
-// Receive single character
-int mp_hal_stdin_rx_chr(void) {
-#ifdef CONFIG_CONSOLE_SUBSYS
-    return console_getchar();
-#else
-    return zephyr_getchar();
-#endif
-}
-
-#ifdef OMV_SUPPORT
-extern bool usb_vcp_is_enabled(void);
-extern void usb_vcp_send_strn(const char *str, int len);
-#endif
-
-// Send string of given length
-void mp_hal_stdout_tx_strn(const char *str, mp_uint_t len)
+#ifndef SYS_TICK_H_
+#define SYS_TICK_H_
+#include "kernel.h"
+static inline void systick_sleep(unsigned long ms)
 {
-#ifdef OMV_SUPPORT
-	if (usb_vcp_is_enabled()) {
-		usb_vcp_send_strn(str, len);
-		return;
-	}
-#endif
-
-#ifdef CONFIG_CONSOLE_SUBSYS
-	while (len--) {
-		char c = *str++;
-
-		while (console_putchar(c) == -1)
-			k_sleep(1);
-	}
-#else
-	static struct device *uart_console_dev;
-
-	if (uart_console_dev == NULL)
-		uart_console_dev = device_get_binding(CONFIG_UART_CONSOLE_ON_DEV_NAME);
-
-	while (len--)
-		uart_poll_out(uart_console_dev, *str++);
-#endif
+	k_sleep(ms);
 }
+
+static inline unsigned int systick_current_millis(void)
+{
+	return 0;
+}
+#endif

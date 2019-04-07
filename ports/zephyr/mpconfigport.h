@@ -35,6 +35,12 @@
 #define MICROPY_HEAP_SIZE (16 * 1024)
 #endif
 
+#define MICROPY_HW_HAS_SDCARD  (1)
+#define MICROPY_FATFS_RPATH            (2)
+#define MICROPY_FATFS_MULTI_PARTITION  (1)
+#define MICROPY_VFS (1)
+#define MICROPY_VFS_FAT (1)
+
 #define MICROPY_ENABLE_SOURCE_LINE  (1)
 #define MICROPY_STACK_CHECK         (1)
 #define MICROPY_ENABLE_GC           (1)
@@ -105,11 +111,18 @@
 typedef int mp_int_t; // must be pointer size
 typedef unsigned mp_uint_t; // must be pointer size
 typedef long mp_off_t;
+typedef void GPIO_TypeDef;
 
 #define MP_STATE_PORT MP_STATE_VM
 
+#ifdef OMV_SUPPORT
 #define MICROPY_PORT_ROOT_POINTERS \
-    const char *readline_hist[8];
+        const char *readline_hist[8]; \
+        mp_obj_t omv_ide_irq;
+#else
+#define MICROPY_PORT_ROOT_POINTERS \
+        const char *readline_hist[8];
+#endif
 
 extern const struct _mp_obj_module_t mp_module_machine;
 extern const struct _mp_obj_module_t mp_module_time;
@@ -157,3 +170,7 @@ extern const struct _mp_obj_module_t mp_module_zsensor;
 // extra built in names to add to the global namespace
 #define MICROPY_PORT_BUILTINS \
 
+#define nlr_raise_for_fb_alloc_mark(val) \
+	do { \
+		nlr_jump(MP_OBJ_TO_PTR(val)); \
+	} while (0)

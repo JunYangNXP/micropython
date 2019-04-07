@@ -1,9 +1,9 @@
 /*
- * This file is part of the MicroPython project, http://micropython.org/
+ * This file is part of the Micro Python project, http://micropython.org/
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Linaro Limited
+ * Copyright (c) 2013, 2014 Damien P. George
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,55 +23,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-#include <unistd.h>
-#include "py/mpconfig.h"
-#include "src/zephyr_getchar.h"
-// Zephyr headers
-#include <uart.h>
-#include <console.h>
-
-/*
- * Core UART functions to implement for a port
- */
-
-// Receive single character
-int mp_hal_stdin_rx_chr(void) {
-#ifdef CONFIG_CONSOLE_SUBSYS
-    return console_getchar();
-#else
-    return zephyr_getchar();
+#ifndef _SDCARD_H_
+#define _SDCARD_H_
+// SD card detect switch
+#ifndef MICROPY_HW_SDCARD_DETECT_PIN
+#define MICROPY_HW_SDCARD_DETECT_PIN        (pin_33)
 #endif
-}
-
-#ifdef OMV_SUPPORT
-extern bool usb_vcp_is_enabled(void);
-extern void usb_vcp_send_strn(const char *str, int len);
+#ifndef MICROPY_HW_SDCARD_DETECT_PULL
+#define MICROPY_HW_SDCARD_DETECT_PULL       (1) // (GPIO_PULLUP)
+#endif
+#ifndef MICROPY_HW_SDCARD_DETECT_PRESENT
+#define MICROPY_HW_SDCARD_DETECT_PRESENT    (2) // (GPIO_PIN_RESET)
 #endif
 
-// Send string of given length
-void mp_hal_stdout_tx_strn(const char *str, mp_uint_t len)
-{
-#ifdef OMV_SUPPORT
-	if (usb_vcp_is_enabled()) {
-		usb_vcp_send_strn(str, len);
-		return;
-	}
+// this is a fixed size and should not be changed
+#define SDCARD_BLOCK_SIZE (512)
+
+// these return 0 on success, non-zero on error
+extern const struct _mp_obj_type_t pyb_sdcard_type;
+extern const struct _mp_obj_base_t pyb_sdcard_obj;
+
+struct _fs_user_mount_t;
+void sdcard_init_vfs(struct _fs_user_mount_t *vfs, int drv);
 #endif
-
-#ifdef CONFIG_CONSOLE_SUBSYS
-	while (len--) {
-		char c = *str++;
-
-		while (console_putchar(c) == -1)
-			k_sleep(1);
-	}
-#else
-	static struct device *uart_console_dev;
-
-	if (uart_console_dev == NULL)
-		uart_console_dev = device_get_binding(CONFIG_UART_CONSOLE_ON_DEV_NAME);
-
-	while (len--)
-		uart_poll_out(uart_console_dev, *str++);
-#endif
-}

@@ -7,7 +7,8 @@
 #
 # To build a "minimal" configuration, use "make-minimal" wrapper.
 
-BOARD ?= qemu_x86
+BOARD ?= mimxrt1050_evk
+OMV ?= 1
 CONF_FILE = prj_$(BOARD)_merged.conf
 OUTDIR_PREFIX = $(BOARD)
 
@@ -17,11 +18,22 @@ OUTDIR_PREFIX = $(BOARD)
 MICROPY_HEAP_SIZE = 16384
 FROZEN_DIR = scripts
 
+ifeq ($(OMV), 1)
+PWD = $(shell pwd)
+OMV_DIR = $(OPENMV_BASE)/src/omv
+OMV_QSTR_DEFS = $(OPENMV_BASE)/src/omv/py/qstrdefsomv.h
+QSTR_DEFS = $(OMV_QSTR_DEFS)
+MP_SRC_DIR = $(PWD)/../..
+endif
+
 # Default target
 all:
 
 include ../../py/mkenv.mk
 include $(TOP)/py/py.mk
+ifeq ($(OMV), 1)
+include $(OPENMV_BASE)/src/omv/omv_zephyr.mk
+endif
 
 # Zephyr (generated) config files - must be defined before include below
 Z_EXPORTS = outdir/$(OUTDIR_PREFIX)/Makefile.export
@@ -36,6 +48,61 @@ INC += -I$(ZEPHYR_BASE)/net/ip
 INC += -I$(ZEPHYR_BASE)/net/ip/contiki
 INC += -I$(ZEPHYR_BASE)/net/ip/contiki/os
 
+ifeq ($(OMV), 1)
+SRC_USBD_MSC_C = usbd_msc_storage.c
+
+SRC_CDC_MSC_C = $(addprefix usb_cdc_msc/,\
+	usb_device_ch9.c \
+	usb_device_msc.c \
+	usb_device_msc_ufi.c \
+	usb_device_class.c \
+	usb_device_descriptor.c \
+	usb_device_cdc_acm.c \
+	virtual_com.c \
+	ring_buffer.c \
+	composite.c \
+	)
+
+SRC_USBD_C = $(addprefix usb/device/usb_device_,\
+	ehci.c \
+	dci.c \
+	)
+
+SRC_USBD_C += $(wildcard usb/osa/usb_osa_bm.c)
+
+SRC_USBD_C += $(wildcard usb/phy/usb_phy.c)
+
+SRC_SD_C += sdcard.c
+
+SRC_USBAPP_C = usb_app.c
+
+SRC_C_ZEPHYR = main.c \
+	help.c \
+	modusocket.c \
+	modutime.c \
+	modzephyr.c \
+	modzsensor.c \
+	modmachine.c \
+	machine_i2c.c \
+	machine_pin.c \
+	modpyb.c    \
+	uart_core.c \
+	lib/timeutils/timeutils.c \
+	lib/utils/stdout_helpers.c \
+	lib/utils/printf.c \
+	lib/utils/pyexec.c \
+	lib/utils/interrupt_char.c \
+	lib/mp-readline/readline.c \
+	lib/oofatfs/ff.c \
+	lib/oofatfs/ffunicode.c \
+	$(SRC_MOD)
+
+SRC_QSTR += $(SRC_C_ZEPHYR)
+
+SRC_C = $(SRC_C_ZEPHYR) $(SRC_USBD_MSC_C) $(SRC_CDC_MSC_C) $(SRC_USBD_C) $(SRC_SD_C) $(SRC_USBAPP_C)
+
+OBJ = $(OMV_OBJS) $(PY_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
+else
 SRC_C = main.c \
 	help.c \
 	modusocket.c \
@@ -57,10 +124,14 @@ SRC_C = main.c \
 SRC_QSTR += $(SRC_C)
 
 OBJ = $(PY_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
+endif
 
 CFLAGS = $(Z_CFLAGS) \
 	 -std=gnu99 -fomit-frame-pointer -DNDEBUG -DMICROPY_HEAP_SIZE=$(MICROPY_HEAP_SIZE) $(CFLAGS_EXTRA) $(INC)
 
+ifeq ($(OMV), 1)
+include $(OPENMV_BASE)/src/omv/mkrules.mk
+endif
 include $(TOP)/py/mkrules.mk
 
 GENERIC_TARGETS = all zephyr run qemu qemugdb flash debug debugserver \
@@ -109,3 +180,26 @@ outdir/$(BOARD)/Makefile: $(CONF_FILE)
 $(Z_EXPORTS): outdir/$(BOARD)/Makefile
 	make --no-print-directory -C outdir/$(BOARD) outputexports CMAKE_COMMAND=: >$@
 	make -C outdir/$(BOARD) syscall_macros_h_target syscall_list_h_target kobj_types_h_target
+
+ifeq ($(OMV), 1)
+CFLAGS += $(CFLAGS_MOD)
+CFLAGS += -DARM_MATH_CM7
+CFLAGS += -D__FPU_PRESENT=1
+CFLAGS += -I$(OPENMV_BASE)/src/omv
+CFLAGS += -I$(OPENMV_BASE)/src/omv/img
+CFLAGS += -I$(OPENMV_BASE)/src/omv/nn
+CFLAGS += -I$(OPENMV_BASE)/src/omv/py
+CFLAGS += -I$(ZEPHYR_BASE)/ext/fs/fat/include/
+CFLAGS += -I$(MP_SRC_DIR)/py
+CFLAGS += -I$(MP_SRC_DIR)/lib/mp-readline
+CFLAGS += -I$(PWD)/usb/include
+CFLAGS:=$(filter-out -I$(ZEPHYR_BASE)/ext/hal/cmsis/Include, $(CFLAGS))
+#CFLAGS -= -I$(ZEPHYR_BASE)/ext/hal/cmsis/Include
+CFLAGS += -I$(OPENMV_BASE)/src/cmsis/include
+CFLAGS += -DZEPHYR_BSP
+CFLAGS += -DOMV_SUPPORT
+CFLAGS += -DUSE_DEVICE_MODE
+#workaround for openmv to include STE header
+HAL_INC = '"omv_zephyr_hal.h"'
+CFLAGS += -DSTM32_HAL_H=$(HAL_INC)
+endif

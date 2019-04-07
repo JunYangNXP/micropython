@@ -78,6 +78,10 @@ void init_zephyr(void) {
 #endif
 }
 
+#ifdef OMV_SUPPORT
+extern int omv_main(void);
+#endif
+
 int real_main(void) {
     int stack_dummy;
     stack_top = (char*)&stack_dummy;
@@ -106,6 +110,10 @@ soft_reset:
     #if MICROPY_MODULE_FROZEN
     pyexec_frozen_module("main.py");
     #endif
+
+#ifdef OMV_SUPPORT
+	omv_main();
+#endif
 
     for (;;) {
         if (pyexec_mode_kind == PYEXEC_MODE_RAW_REPL) {
