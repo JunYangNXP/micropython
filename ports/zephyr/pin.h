@@ -105,4 +105,4 @@ static inline const pin_af_obj_t *pin_find_af_by_name(const pin_obj_t *pin,
 	return 0;
 }
 
-#endif // MICROPY_INCLUDED_STM32_PIN_H
+#endif

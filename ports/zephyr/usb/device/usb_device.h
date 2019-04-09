@@ -45,57 +45,36 @@
  ******************************************************************************/
 
 /*! @brief Defines Get/Set status Types */
-typedef enum _usb_device_status
-{
-    kUSB_DeviceStatusTestMode = 1U,  /*!< Test mode */
-    kUSB_DeviceStatusSpeed,          /*!< Current speed */
-    kUSB_DeviceStatusOtg,            /*!< OTG status */
-    kUSB_DeviceStatusDevice,         /*!< Device status */
-    kUSB_DeviceStatusEndpoint,       /*!< Endpoint state usb_device_endpoint_status_t */
-    kUSB_DeviceStatusDeviceState,    /*!< Device state */
-    kUSB_DeviceStatusAddress,        /*!< Device address */
-    kUSB_DeviceStatusSynchFrame,     /*!< Current frame */
-    kUSB_DeviceStatusBus,            /*!< Bus status */
-    kUSB_DeviceStatusBusSuspend,     /*!< Bus suspend */
-    kUSB_DeviceStatusBusSleep,       /*!< Bus suspend */
-    kUSB_DeviceStatusBusResume,      /*!< Bus resume */
-    kUSB_DeviceStatusRemoteWakeup,   /*!< Remote wakeup state */
-    kUSB_DeviceStatusBusSleepResume, /*!< Bus resume */
+typedef enum _usb_device_status {
+	kUSB_DeviceStatusTestMode = 1U,  /*!< Test mode */
+	kUSB_DeviceStatusSpeed,          /*!< Current speed */
+	kUSB_DeviceStatusOtg,            /*!< OTG status */
+	kUSB_DeviceStatusDevice,         /*!< Device status */
+	kUSB_DeviceStatusEndpoint,       /*!< Endpoint state usb_device_endpoint_status_t */
+	kUSB_DeviceStatusDeviceState,    /*!< Device state */
+	kUSB_DeviceStatusAddress,        /*!< Device address */
+	kUSB_DeviceStatusSynchFrame,     /*!< Current frame */
+	kUSB_DeviceStatusBus,            /*!< Bus status */
+	kUSB_DeviceStatusBusSuspend,     /*!< Bus suspend */
+	kUSB_DeviceStatusBusSleep,       /*!< Bus suspend */
+	kUSB_DeviceStatusBusResume,      /*!< Bus resume */
+	kUSB_DeviceStatusRemoteWakeup,   /*!< Remote wakeup state */
+	kUSB_DeviceStatusBusSleepResume, /*!< Bus resume */
 } usb_device_status_t;
 
 /*! @brief Defines USB 2.0 device state */
-typedef enum _usb_device_state
-{
-    kUSB_DeviceStateConfigured = 0U, /*!< Device state, Configured*/
-    kUSB_DeviceStateAddress,         /*!< Device state, Address*/
-    kUSB_DeviceStateDefault,         /*!< Device state, Default*/
-    kUSB_DeviceStateAddressing,      /*!< Device state, Address setting*/
-    kUSB_DeviceStateTestMode,        /*!< Device state, Test mode*/
+typedef enum _usb_device_state {
+	kUSB_DeviceStateConfigured = 0U, /*!< Device state, Configured*/
+	kUSB_DeviceStateAddress,         /*!< Device state, Address*/
+	kUSB_DeviceStateDefault,         /*!< Device state, Default*/
+	kUSB_DeviceStateAddressing,      /*!< Device state, Address setting*/
+	kUSB_DeviceStateTestMode,        /*!< Device state, Test mode*/
 } usb_device_state_t;
 
-#if (defined(USB_DEVICE_CHARGER_DETECT_ENABLE) && (USB_DEVICE_CHARGER_DETECT_ENABLE > 0U))
-typedef enum _usb_dcd_detection_sequence_status
-{
-    kUSB_DcdDetectionNotEnabled = 0x0U,
-    kUSB_DcdDataPinDetectionCompleted = 0x01U,
-    kUSB_DcdChargingPortDetectionCompleted = 0x02U,
-    kUSB_DcdChargerTypeDetectionCompleted = 0x03U,
-} usb_dcd_detection_sequence_status_t;
-
-typedef enum _usb_dcd_detection_sequence_results
-{
-    kUSB_DcdDetectionNoResults = 0x0U,
-    kUSB_DcdDetectionStandardHost = 0x01U,
-    kUSB_DcdDetectionChargingPort = 0x02U,
-    kUSB_DcdDetectionDedicatedCharger = 0x03U,
-} usb_dcd_detection_sequence_results_t;
-#endif
-
 /*! @brief Defines endpoint state */
-typedef enum _usb_endpoint_status
-{
-    kUSB_DeviceEndpointStateIdle = 0U, /*!< Endpoint state, idle*/
-    kUSB_DeviceEndpointStateStalled,   /*!< Endpoint state, stalled*/
+typedef enum _usb_endpoint_status {
+	kUSB_DeviceEndpointStateIdle = 0U, /*!< Endpoint state, idle*/
+	kUSB_DeviceEndpointStateStalled,   /*!< Endpoint state, stalled*/
 } usb_device_endpoint_status_t;
 
 /*! @brief Control endpoint index */
@@ -116,49 +95,38 @@ typedef enum _usb_endpoint_status
 #define USB_UNINITIALIZED_VAL_32 (0xFFFFFFFFU)
 
 /*! @brief Available common EVENT types in device callback */
-typedef enum _usb_device_event
-{
-    kUSB_DeviceEventBusReset = 1U, /*!< USB bus reset signal detected */
-    kUSB_DeviceEventSuspend,       /*!< USB bus suspend signal detected */
-    kUSB_DeviceEventResume,    /*!< USB bus resume signal detected. The resume signal is driven by itself or a host */
-    kUSB_DeviceEventSleeped,   /*!< USB bus LPM suspend signal detected */
-    kUSB_DeviceEventLPMResume, /*!< USB bus LPM resume signal detected. The resume signal is driven by itself or a host
-                                  */
-    kUSB_DeviceEventError,     /*!< An error is happened in the bus. */
-    kUSB_DeviceEventDetach,    /*!< USB device is disconnected from a host. */
-    kUSB_DeviceEventAttach,    /*!< USB device is connected to a host. */
-    kUSB_DeviceEventSetConfiguration, /*!< Set configuration. */
-    kUSB_DeviceEventSetInterface,     /*!< Set interface. */
+typedef enum _usb_device_event {
+	kUSB_DeviceEventBusReset = 1U, /*!< USB bus reset signal detected */
+	kUSB_DeviceEventSuspend,       /*!< USB bus suspend signal detected */
+	kUSB_DeviceEventResume,    /*!< USB bus resume signal detected. The resume signal is driven by itself or a host */
+	kUSB_DeviceEventSleeped,   /*!< USB bus LPM suspend signal detected */
+	kUSB_DeviceEventLPMResume, /*!< USB bus LPM resume signal detected. The resume signal is driven by itself or a host*/
+	kUSB_DeviceEventError,     /*!< An error is happened in the bus. */
+	kUSB_DeviceEventDetach,    /*!< USB device is disconnected from a host. */
+	kUSB_DeviceEventAttach,    /*!< USB device is connected to a host. */
+	kUSB_DeviceEventSetConfiguration, /*!< Set configuration. */
+	kUSB_DeviceEventSetInterface,     /*!< Set interface. */
 
-    kUSB_DeviceEventGetDeviceDescriptor,          /*!< Get device descriptor. */
-    kUSB_DeviceEventGetConfigurationDescriptor,   /*!< Get configuration descriptor. */
-    kUSB_DeviceEventGetStringDescriptor,          /*!< Get string descriptor. */
-    kUSB_DeviceEventGetHidDescriptor,             /*!< Get HID descriptor. */
-    kUSB_DeviceEventGetHidReportDescriptor,       /*!< Get HID report descriptor. */
-    kUSB_DeviceEventGetHidPhysicalDescriptor,     /*!< Get HID physical descriptor. */
-    kUSB_DeviceEventGetBOSDescriptor,             /*!< Get configuration descriptor. */
-    kUSB_DeviceEventGetDeviceQualifierDescriptor, /*!< Get device qualifier descriptor. */
-    kUSB_DeviceEventVendorRequest,                /*!< Vendor request. */
-    kUSB_DeviceEventSetRemoteWakeup,              /*!< Enable or disable remote wakeup function. */
-    kUSB_DeviceEventGetConfiguration,             /*!< Get current configuration index */
-    kUSB_DeviceEventGetInterface,                 /*!< Get current interface alternate setting value */
-    kUSB_DeviceEventSetBHNPEnable,
-#if (defined(USB_DEVICE_CHARGER_DETECT_ENABLE) && (USB_DEVICE_CHARGER_DETECT_ENABLE > 0U))
-    kUSB_DeviceEventDcdTimeOut,               /*!< Dcd detect result is timeout */
-    kUSB_DeviceEventDcdUnknownType,           /*!< Dcd detect result is unknown type */
-    kUSB_DeviceEventSDPDetected,              /*!< The SDP facility is detected */
-    kUSB_DeviceEventChargingPortDetected,     /*!< The charging port is detected */
-    kUSB_DeviceEventChargingHostDetected,     /*!< The CDP facility is detected */
-    kUSB_DeviceEventDedicatedChargerDetected, /*!< The DCP facility is detected */
-#endif
+	kUSB_DeviceEventGetDeviceDescriptor,          /*!< Get device descriptor. */
+	kUSB_DeviceEventGetConfigurationDescriptor,   /*!< Get configuration descriptor. */
+	kUSB_DeviceEventGetStringDescriptor,          /*!< Get string descriptor. */
+	kUSB_DeviceEventGetHidDescriptor,             /*!< Get HID descriptor. */
+	kUSB_DeviceEventGetHidReportDescriptor,       /*!< Get HID report descriptor. */
+	kUSB_DeviceEventGetHidPhysicalDescriptor,     /*!< Get HID physical descriptor. */
+	kUSB_DeviceEventGetBOSDescriptor,             /*!< Get configuration descriptor. */
+	kUSB_DeviceEventGetDeviceQualifierDescriptor, /*!< Get device qualifier descriptor. */
+	kUSB_DeviceEventVendorRequest,                /*!< Vendor request. */
+	kUSB_DeviceEventSetRemoteWakeup,              /*!< Enable or disable remote wakeup function. */
+	kUSB_DeviceEventGetConfiguration,             /*!< Get current configuration index */
+	kUSB_DeviceEventGetInterface,                 /*!< Get current interface alternate setting value */
+	kUSB_DeviceEventSetBHNPEnable,
 } usb_device_event_t;
 
 /*! @brief Endpoint callback message structure */
-typedef struct _usb_device_endpoint_callback_message_struct
-{
-    uint8_t *buffer; /*!< Transferred buffer */
-    uint32_t length; /*!< Transferred data length */
-    uint8_t isSetup; /*!< Is in a setup phase */
+typedef struct _usb_device_endpoint_callback_message_struct {
+	uint8_t *buffer; /*!< Transferred buffer */
+	uint32_t length; /*!< Transferred data length */
+	uint8_t isSetup; /*!< Is in a setup phase */
 } usb_device_endpoint_callback_message_struct_t;
 
 /*!
@@ -195,40 +163,25 @@ typedef usb_status_t (*usb_device_endpoint_callback_t)(usb_device_handle handle,
 typedef usb_status_t (*usb_device_callback_t)(usb_device_handle handle, uint32_t callbackEvent, void *eventParam);
 
 /*! @brief Endpoint callback structure */
-typedef struct _usb_device_endpoint_callback_struct
-{
-    usb_device_endpoint_callback_t callbackFn; /*!< Endpoint callback function*/
-    void *callbackParam;                       /*!< Parameter for callback function*/
-    uint8_t isBusy;
+typedef struct _usb_device_endpoint_callback_struct {
+	usb_device_endpoint_callback_t callbackFn; /*!< Endpoint callback function*/
+	void *callbackParam;                       /*!< Parameter for callback function*/
+	uint8_t isBusy;
 } usb_device_endpoint_callback_struct_t;
 
 /*! @brief Endpoint initialization structure */
-typedef struct _usb_device_endpoint_init_struct
-{
-    uint16_t maxPacketSize;  /*!< Endpoint maximum packet size */
-    uint8_t endpointAddress; /*!< Endpoint address*/
-    uint8_t transferType;    /*!< Endpoint transfer type*/
-    uint8_t zlt;             /*!< ZLT flag*/
+typedef struct _usb_device_endpoint_init_struct {
+	uint16_t maxPacketSize;  /*!< Endpoint maximum packet size */
+	uint8_t endpointAddress; /*!< Endpoint address*/
+	uint8_t transferType;    /*!< Endpoint transfer type*/
+	uint8_t zlt;             /*!< ZLT flag*/
 } usb_device_endpoint_init_struct_t;
 
 /*! @brief Endpoint status structure */
-typedef struct _usb_device_endpoint_status_struct
-{
-    uint8_t endpointAddress; /*!< Endpoint address */
-    uint16_t endpointStatus; /*!< Endpoint status : idle or stalled */
+typedef struct _usb_device_endpoint_status_struct {
+	uint8_t endpointAddress; /*!< Endpoint address */
+	uint16_t endpointStatus; /*!< Endpoint status : idle or stalled */
 } usb_device_endpoint_status_struct_t;
-
-#if (defined(USB_DEVICE_CHARGER_DETECT_ENABLE) && (USB_DEVICE_CHARGER_DETECT_ENABLE > 0U))
-/*! @brief USB DCD charge timing specification structure */
-typedef struct _usb_device_dcd_charging_time
-{
-    uint16_t dcdSeqInitTime;      /*!< The dcd sequence init time */
-    uint16_t dcdDbncTime;         /*!< The debounce time period on DP signal */
-    uint16_t dcdDpSrcOnTime;      /*!< The time period comparator enabled */
-    uint16_t dcdTimeWaitAfterPrD; /*!< The time period between primary and secondary detection */
-    uint8_t dcdTimeDMSrcOn;       /*!< The amount of time that the modules enable the Vdm_src */
-} usb_device_dcd_charging_time_t;
-#endif
 
 #if defined(__cplusplus)
 extern "C" {
@@ -263,8 +216,8 @@ extern "C" {
  *                                          Or, the mutex or message queue is created failed.
  */
 extern usb_status_t USB_DeviceInit(uint8_t controllerId,
-                                   usb_device_callback_t deviceCallback,
-                                   usb_device_handle *handle);
+		usb_device_callback_t deviceCallback,
+		usb_device_handle *handle);
 
 /*!
  * @brief Enables the device functionality.
@@ -334,9 +287,9 @@ extern usb_status_t USB_DeviceDeinit(usb_device_handle handle);
  * callback).
  */
 extern usb_status_t USB_DeviceSendRequest(usb_device_handle handle,
-                                          uint8_t endpointAddress,
-                                          uint8_t *buffer,
-                                          uint32_t length);
+		uint8_t endpointAddress,
+		uint8_t *buffer,
+		uint32_t length);
 
 /*!
  * @brief Receives data through a specified endpoint.
@@ -364,9 +317,9 @@ extern usb_status_t USB_DeviceSendRequest(usb_device_handle handle,
  * callback).
  */
 extern usb_status_t USB_DeviceRecvRequest(usb_device_handle handle,
-                                          uint8_t endpointAddress,
-                                          uint8_t *buffer,
-                                          uint32_t length);
+		uint8_t endpointAddress,
+		uint8_t *buffer,
+		uint32_t length);
 
 /*!
  * @brief Cancels the pending transfer in a specified endpoint.
@@ -400,8 +353,8 @@ extern usb_status_t USB_DeviceCancel(usb_device_handle handle, uint8_t endpointA
  * @retval kStatus_USB_ControllerNotFound   Cannot find the controller.
  */
 extern usb_status_t USB_DeviceInitEndpoint(usb_device_handle handle,
-                                           usb_device_endpoint_init_struct_t *epInit,
-                                           usb_device_endpoint_callback_struct_t *epCallback);
+		usb_device_endpoint_init_struct_t *epInit,
+		usb_device_endpoint_callback_struct_t *epCallback);
 
 /*!
  * @brief Deinitializes a specified endpoint.
@@ -482,34 +435,6 @@ extern usb_status_t USB_DeviceGetStatus(usb_device_handle handle, usb_device_sta
  */
 extern usb_status_t USB_DeviceSetStatus(usb_device_handle handle, usb_device_status_t type, void *param);
 
-#if (defined(USB_DEVICE_CHARGER_DETECT_ENABLE) && (USB_DEVICE_CHARGER_DETECT_ENABLE > 0U))
-/*!
- * @brief Initializes the device dcd module.
- *
- * The function initializes the device dcd module.
- *
- * @param[in] handle The device handle got from #USB_DeviceInit.
- * @param[in] time_param The time parameter used to config the dcd timing registers.
- *
- * @retval kStatus_USB_Success              The device is run successfully.
- * @retval kStatus_USB_ControllerNotFound   Cannot find the controller.
- * @retval kStatus_USB_InvalidHandle        The device handle is a NULL pointer. Or the controller handle is invalid.
- *
- */
-extern usb_status_t USB_DeviceDcdInitModule(usb_device_handle handle, void *time_param);
-
-/*!
- * @brief De-initializes the device dcd module.
- *
- * The function de-initializes the device dcd module specified by the handle.
- *
- * @param[in] handle The device handle got from #USB_DeviceInit.
- *
- * @retval kStatus_USB_Success 			 The device is stopped successfully.
- * @retval kStatus_USB_InvalidHandle		 The device handle is a NULL pointer or the controller handle is invalid.
- */
-extern usb_status_t USB_DeviceDcdDeinitModule(usb_device_handle handle);
-#endif
 /*!
  * @brief Device task function.
  *
@@ -544,16 +469,6 @@ extern void USB_DeviceTaskFunction(void *deviceHandle);
  * @param[in] deviceHandle The device handle got from #USB_DeviceInit.
  */
 #define USB_DeviceEhciTaskFunction(deviceHandle) USB_DeviceTaskFunction(deviceHandle)
-#if (defined(USB_DEVICE_CHARGER_DETECT_ENABLE) && (USB_DEVICE_CHARGER_DETECT_ENABLE > 0U))
-/*!
- * @brief Device EHCI DCD ISR function.
- *
- * The function is the EHCI DCD interrupt service routine.
- *
- * @param[in] deviceHandle The device handle got from #USB_DeviceInit.
- */
-extern void USB_DeviceDcdHSIsrFunction(void *deviceHandle);
-#endif
 #endif
 
 #if (((defined(USB_DEVICE_CONFIG_LPCIP3511FS)) && (USB_DEVICE_CONFIG_LPCIP3511FS > 0U)) || \
@@ -579,16 +494,6 @@ extern void USB_DeviceDcdHSIsrFunction(void *deviceHandle);
  * @param[in] deviceHandle The device handle got from #USB_DeviceInit.
  */
 extern void USB_DeviceKhciIsrFunction(void *deviceHandle);
-#if (defined(USB_DEVICE_CHARGER_DETECT_ENABLE) && (USB_DEVICE_CHARGER_DETECT_ENABLE > 0U))
-/*!
- * @brief Device KHCI DCD ISR function.
- *
- * The function is the KHCI DCD interrupt service routine.
- *
- * @param[in] deviceHandle The device handle got from #USB_DeviceInit.
- */
-extern void USB_DeviceDcdIsrFunction(void *deviceHandle);
-#endif
 #endif
 
 #if ((defined(USB_DEVICE_CONFIG_EHCI)) && (USB_DEVICE_CONFIG_EHCI > 0U))

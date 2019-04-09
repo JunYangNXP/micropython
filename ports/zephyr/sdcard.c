@@ -42,11 +42,11 @@
 #if MICROPY_HW_HAS_SDCARD
 
 /******************************************************************************/
-// Micro Python bindings
-//
-// Expose the SD card as an object with the block protocol.
+/*Micro Python bindings
 
-// there is a singleton SDCard object
+Expose the SD card as an object with the block protocol.
+
+there is a singleton SDCard object*/
 const mp_obj_base_t pyb_sdcard_obj = {&pyb_sdcard_type};
 
 STATIC mp_obj_t pyb_sdcard_make_new(const mp_obj_type_t *type,
@@ -66,6 +66,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_1(sd_present_obj, sd_present);
 STATIC mp_obj_t sd_power(mp_obj_t self, mp_obj_t state)
 {
 	bool result;
+
 	if (mp_obj_is_true(state)) {
 		result = sdcard_power_on();
 	} else {
@@ -94,7 +95,6 @@ STATIC mp_obj_t sd_info(mp_obj_t self)
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(sd_info_obj, sd_info);
 
-// now obsolete, kept for backwards compatibility
 STATIC mp_obj_t sd_read(mp_obj_t self, mp_obj_t block_num)
 {
 	uint8_t *dest = m_new(uint8_t, SDCARD_BLOCK_SIZE);
@@ -109,21 +109,22 @@ STATIC mp_obj_t sd_read(mp_obj_t self, mp_obj_t block_num)
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(sd_read_obj, sd_read);
 
-// now obsolete, kept for backwards compatibility
 STATIC mp_obj_t sd_write(mp_obj_t self, mp_obj_t block_num, mp_obj_t data)
 {
 	mp_buffer_info_t bufinfo;
 	mp_uint_t ret;
 
 	mp_get_buffer_raise(data, &bufinfo, MP_BUFFER_READ);
-	if (bufinfo.len % SDCARD_BLOCK_SIZE != 0) {
-		nlr_raise(mp_obj_new_exception_msg_varg(&mp_type_ValueError, "writes must be a multiple of %d bytes", SDCARD_BLOCK_SIZE));
-	}
+	if (bufinfo.len % SDCARD_BLOCK_SIZE != 0)
+		nlr_raise(mp_obj_new_exception_msg_varg(&mp_type_ValueError,
+			"writes must be a multiple of %d bytes", SDCARD_BLOCK_SIZE));
 
-	ret = sdcard_write_blocks(bufinfo.buf, mp_obj_get_int(block_num), bufinfo.len / SDCARD_BLOCK_SIZE);
+	ret = sdcard_write_blocks(bufinfo.buf, mp_obj_get_int(block_num),
+		bufinfo.len / SDCARD_BLOCK_SIZE);
 
 	if (ret != 0)
-		nlr_raise(mp_obj_new_exception_msg_varg(&mp_type_Exception, "sdcard_write_blocks failed [%u]", ret));
+		nlr_raise(mp_obj_new_exception_msg_varg(&mp_type_Exception,
+			"sdcard_write_blocks failed [%u]", ret));
 
 	return mp_const_none;
 }
@@ -145,7 +146,7 @@ STATIC mp_obj_t pyb_sdcard_writeblocks(mp_obj_t self,
 	mp_obj_t block_num, mp_obj_t buf)
 {
 	mp_buffer_info_t bufinfo;
-	mp_uint_t ret ;
+	mp_uint_t ret;
 
 	mp_get_buffer_raise(buf, &bufinfo, MP_BUFFER_READ);
 	ret = sdcard_write_blocks(bufinfo.buf, mp_obj_get_int(block_num), bufinfo.len / SDCARD_BLOCK_SIZE);
@@ -161,25 +162,24 @@ STATIC mp_obj_t pyb_sdcard_ioctl(mp_obj_t self, mp_obj_t cmd_in,
 	switch (cmd) {
 	case BP_IOCTL_INIT:
 		if (!sdcard_power_on())
-			return MP_OBJ_NEW_SMALL_INT(-1); // error
-		return MP_OBJ_NEW_SMALL_INT(0); // success
+			return MP_OBJ_NEW_SMALL_INT(-1);
+		return MP_OBJ_NEW_SMALL_INT(0);
 
 	case BP_IOCTL_DEINIT:
 		sdcard_power_off();
-		return MP_OBJ_NEW_SMALL_INT(0); // success
+		return MP_OBJ_NEW_SMALL_INT(0);
 
 	case BP_IOCTL_SYNC:
-		// nothing to do
-		return MP_OBJ_NEW_SMALL_INT(0); // success
+		return MP_OBJ_NEW_SMALL_INT(0);
 
 	case BP_IOCTL_SEC_COUNT:
-		return MP_OBJ_NEW_SMALL_INT(0); // TODO
+		return MP_OBJ_NEW_SMALL_INT(0);
 
 	case BP_IOCTL_SEC_SIZE:
 		return MP_OBJ_NEW_SMALL_INT(SDCARD_BLOCK_SIZE);
 
-	default: // unknown command
-		return MP_OBJ_NEW_SMALL_INT(-1); // error
+	default:
+		return MP_OBJ_NEW_SMALL_INT(-1);
 	}
 }
 
@@ -226,7 +226,7 @@ const mp_obj_type_t pyb_sdcard_type = {
 	{ &mp_type_type },
 	.name = MP_QSTR_SDCard,
 	.make_new = pyb_sdcard_make_new,
-	.locals_dict = (mp_obj_dict_t*)&pyb_sdcard_locals_dict,
+	.locals_dict = (mp_obj_dict_t *)&pyb_sdcard_locals_dict,
 };
 
 void sdcard_init_vfs(fs_user_mount_t *vfs, int drv)
@@ -241,11 +241,11 @@ void sdcard_init_vfs(fs_user_mount_t *vfs, int drv)
 #endif
 	vfs->readblocks[0] = (mp_obj_t)&pyb_sdcard_readblocks_obj;
 	vfs->readblocks[1] = (mp_obj_t)&pyb_sdcard_obj;
-	vfs->readblocks[2] = (mp_obj_t)sdcard_read_blocks; // native version
+	vfs->readblocks[2] = (mp_obj_t)sdcard_read_blocks; /* native version*/
 	vfs->writeblocks[0] = (mp_obj_t)&pyb_sdcard_writeblocks_obj;
 	vfs->writeblocks[1] = (mp_obj_t)&pyb_sdcard_obj;
-	vfs->writeblocks[2] = (mp_obj_t)sdcard_write_blocks; // native version
+	vfs->writeblocks[2] = (mp_obj_t)sdcard_write_blocks; /* native version*/
 	vfs->u.ioctl[0] = (mp_obj_t)&pyb_sdcard_ioctl_obj;
 	vfs->u.ioctl[1] = (mp_obj_t)&pyb_sdcard_obj;
 }
-#endif // MICROPY_HW_HAS_SDCARD
+#endif

@@ -39,18 +39,4 @@ enum {
 
 typedef void (*pendsv_dispatch_t)(void);
 
-#if 0
-static inline void pendsv_init(void)
-{
-	return;
-}
-static inline void pendsv_kbd_intr(void)
-{
-	return;
-}
-static inline void pendsv_schedule_dispatch(size_t slot, pendsv_dispatch_t f)
-{
-	return;
-}
 #endif
-#endif // MICROPY_INCLUDED_STM32_PENDSV_H

@@ -117,11 +117,11 @@ typedef void GPIO_TypeDef;
 
 #ifdef OMV_SUPPORT
 #define MICROPY_PORT_ROOT_POINTERS \
-        const char *readline_hist[8]; \
-        mp_obj_t omv_ide_irq;
+	const char *readline_hist[8]; \
+	mp_obj_t omv_ide_irq;
 #else
 #define MICROPY_PORT_ROOT_POINTERS \
-        const char *readline_hist[8];
+	const char *readline_hist[8];
 #endif
 
 extern const struct _mp_obj_module_t mp_module_machine;

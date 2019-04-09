@@ -25,21 +25,20 @@
  */
 #ifndef _SDCARD_H_
 #define _SDCARD_H_
-// SD card detect switch
+/*SD card detect switch*/
 #ifndef MICROPY_HW_SDCARD_DETECT_PIN
 #define MICROPY_HW_SDCARD_DETECT_PIN        (pin_33)
 #endif
 #ifndef MICROPY_HW_SDCARD_DETECT_PULL
-#define MICROPY_HW_SDCARD_DETECT_PULL       (1) // (GPIO_PULLUP)
+#define MICROPY_HW_SDCARD_DETECT_PULL       (1)
 #endif
 #ifndef MICROPY_HW_SDCARD_DETECT_PRESENT
-#define MICROPY_HW_SDCARD_DETECT_PRESENT    (2) // (GPIO_PIN_RESET)
+#define MICROPY_HW_SDCARD_DETECT_PRESENT    (2)
 #endif
 
-// this is a fixed size and should not be changed
+/*this is a fixed size and should not be changed*/
 #define SDCARD_BLOCK_SIZE (512)
 
-// these return 0 on success, non-zero on error
 extern const struct _mp_obj_type_t pyb_sdcard_type;
 extern const struct _mp_obj_base_t pyb_sdcard_obj;
 
