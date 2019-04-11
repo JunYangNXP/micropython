@@ -129,9 +129,6 @@ static void lba_cfg(usb_device_lba_information_struct_t *lbaInf)
 #define USB_DEVICE_SDCARD_BLOCK_SIZE_POWER (9U)
 #define USB_DEVICE_MSC_ADMA_TABLE_WORDS (8U)
 
-extern status_t ums_sd_read_blocks(void *card, uint8_t *buffer, uint32_t startBlock, uint32_t blockCount);
-//extern sd_card_t g_sd;
-
 usb_status_t usbd_msc_cb(class_handle_t handle, uint32_t event, void *param)
 {
 	usb_status_t error = kStatus_USB_Success;
@@ -170,7 +167,7 @@ usb_status_t usbd_msc_cb(class_handle_t handle, uint32_t event, void *param)
 		lba = (usb_device_lba_app_struct_t *)param;
 		lba->buffer = (uint8_t *)&g_mscReadRequestBuffer[0];
 		if (sdcard_is_present())
-			t1 = ums_sd_read_blocks(0, lba->buffer, lba->offset, lba->size >> USB_DEVICE_SDCARD_BLOCK_SIZE_POWER);
+			t1 = sdcard_read_blocks(lba->buffer, lba->offset, lba->size >> USB_DEVICE_SDCARD_BLOCK_SIZE_POWER);
 		if (0 != t1) {
 			g_deviceComposite->mscDisk.readWriteError = 1;
 			usb_echo(
