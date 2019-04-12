@@ -130,6 +130,21 @@ extern const struct _mp_obj_module_t mp_module_usocket;
 extern const struct _mp_obj_module_t mp_module_zephyr;
 extern const struct _mp_obj_module_t mp_module_zsensor;
 
+#ifdef OMV_SUPPORT
+extern const struct _mp_obj_module_t sensor_module;
+extern const struct _mp_obj_module_t image_module;
+extern const struct _mp_obj_module_t mjpeg_module;
+extern const struct _mp_obj_module_t nn_module;
+#define MICROPY_PY_SENSOR_DEF	{MP_ROM_QSTR(MP_QSTR_sensor), MP_ROM_PTR(&sensor_module)},
+#define MICROPY_PY_IMAGE_DEF	{MP_OBJ_NEW_QSTR(MP_QSTR_image), MP_ROM_PTR(&image_module)},
+#define MICROPY_PY_MJPEG_DEF	{MP_OBJ_NEW_QSTR(MP_QSTR_mjpeg), MP_ROM_PTR(&mjpeg_module)},
+#define MICROPY_PY_NN_DEF	{MP_OBJ_NEW_QSTR(MP_QSTR_nn), MP_ROM_PTR(&nn_module)},
+#else
+#define MICROPY_PY_SENSOR_DEF
+#define MICROPY_PY_IMAGE_DEF
+#define MICROPY_PY_MJPEG_DEF
+#define MICROPY_PY_NN_DEF
+#endif
 #if MICROPY_PY_USOCKET
 #define MICROPY_PY_USOCKET_DEF { MP_ROM_QSTR(MP_QSTR_usocket), MP_ROM_PTR(&mp_module_usocket) },
 #define MICROPY_PY_USOCKET_WEAK_DEF { MP_ROM_QSTR(MP_QSTR_socket), MP_ROM_PTR(&mp_module_usocket) },
@@ -157,11 +172,15 @@ extern const struct _mp_obj_module_t mp_module_zsensor;
 #endif
 
 #define MICROPY_PORT_BUILTIN_MODULES \
-    { MP_ROM_QSTR(MP_QSTR_machine), MP_ROM_PTR(&mp_module_machine) }, \
-    MICROPY_PY_USOCKET_DEF \
-    MICROPY_PY_UTIME_DEF \
-    MICROPY_PY_ZEPHYR_DEF \
-    MICROPY_PY_ZSENSOR_DEF \
+	{MP_ROM_QSTR(MP_QSTR_machine), MP_ROM_PTR(&mp_module_machine)}, \
+	MICROPY_PY_USOCKET_DEF \
+	MICROPY_PY_UTIME_DEF \
+	MICROPY_PY_ZEPHYR_DEF \
+	MICROPY_PY_ZSENSOR_DEF \
+	MICROPY_PY_SENSOR_DEF \
+	MICROPY_PY_IMAGE_DEF \
+	MICROPY_PY_MJPEG_DEF \
+	MICROPY_PY_NN_DEF \
 
 #define MICROPY_PORT_BUILTIN_MODULE_WEAK_LINKS \
     { MP_ROM_QSTR(MP_QSTR_time), MP_ROM_PTR(&mp_module_time) }, \
