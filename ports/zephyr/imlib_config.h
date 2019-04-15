@@ -86,4 +86,6 @@ typedef unsigned int uint;
 
 #define IMLIB_ENABLE_HOG
 
+#define IMLIB_ENABLE_YUV_LUT
+
 #endif
