@@ -34,6 +34,6 @@ static inline void systick_sleep(unsigned long ms)
 
 static inline unsigned int systick_current_millis(void)
 {
-	return 0;
+	return (unsigned int)k_uptime_get();
 }
 #endif

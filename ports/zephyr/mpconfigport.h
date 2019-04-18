@@ -135,10 +135,13 @@ extern const struct _mp_obj_module_t sensor_module;
 extern const struct _mp_obj_module_t image_module;
 extern const struct _mp_obj_module_t mjpeg_module;
 extern const struct _mp_obj_module_t nn_module;
+extern const struct _mp_obj_module_t time_module;
+
 #define MICROPY_PY_SENSOR_DEF	{MP_ROM_QSTR(MP_QSTR_sensor), MP_ROM_PTR(&sensor_module)},
 #define MICROPY_PY_IMAGE_DEF	{MP_OBJ_NEW_QSTR(MP_QSTR_image), MP_ROM_PTR(&image_module)},
 #define MICROPY_PY_MJPEG_DEF	{MP_OBJ_NEW_QSTR(MP_QSTR_mjpeg), MP_ROM_PTR(&mjpeg_module)},
 #define MICROPY_PY_NN_DEF	{MP_OBJ_NEW_QSTR(MP_QSTR_nn), MP_ROM_PTR(&nn_module)},
+#define MICROPY_PY_TIME_DEF	{MP_OBJ_NEW_QSTR(MP_QSTR_time), MP_ROM_PTR(&time_module)},
 #else
 #define MICROPY_PY_SENSOR_DEF
 #define MICROPY_PY_IMAGE_DEF
@@ -181,11 +184,14 @@ extern const struct _mp_obj_module_t nn_module;
 	MICROPY_PY_IMAGE_DEF \
 	MICROPY_PY_MJPEG_DEF \
 	MICROPY_PY_NN_DEF \
+	MICROPY_PY_TIME_DEF \
 
+#ifndef OMV_SUPPORT
 #define MICROPY_PORT_BUILTIN_MODULE_WEAK_LINKS \
-    { MP_ROM_QSTR(MP_QSTR_time), MP_ROM_PTR(&mp_module_time) }, \
-    MICROPY_PY_USOCKET_WEAK_DEF \
+	{ MP_ROM_QSTR(MP_QSTR_time), MP_ROM_PTR(&mp_module_time) }, \
+	MICROPY_PY_USOCKET_WEAK_DEF \
 
+#endif
 // extra built in names to add to the global namespace
 #define MICROPY_PORT_BUILTINS \
 
