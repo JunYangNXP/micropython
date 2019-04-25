@@ -9,6 +9,7 @@
 
 BOARD ?= mimxrt1050_evk
 OMV ?= 1
+TFLIGHT ?= 0
 CONF_FILE = prj_$(BOARD)_merged.conf
 OUTDIR_PREFIX = $(BOARD)
 
@@ -33,6 +34,10 @@ include ../../py/mkenv.mk
 include $(TOP)/py/py.mk
 ifeq ($(OMV), 1)
 include $(OPENMV_BASE)/src/omv/omv_zephyr.mk
+endif
+
+ifeq ($(TFLIGHT), 1)
+include $(TFLIGHT_BASE)/tensorflow/contrib/lite/tflight_zephyr.mk
 endif
 
 # Zephyr (generated) config files - must be defined before include below
@@ -77,31 +82,32 @@ SRC_SD_C += sdcard.c
 SRC_USBAPP_C = usb_app.c
 
 SRC_C_ZEPHYR = main.c \
-	help.c \
-	modusocket.c \
-	modutime.c \
-	modzephyr.c \
-	modzsensor.c \
-	modmachine.c \
-	machine_i2c.c \
-	machine_pin.c \
-	modpyb.c    \
-	uart_core.c \
-	lib/timeutils/timeutils.c \
-	lib/utils/stdout_helpers.c \
-	lib/utils/printf.c \
-	lib/utils/pyexec.c \
-	lib/utils/interrupt_char.c \
-	lib/mp-readline/readline.c \
-	lib/oofatfs/ff.c \
-	lib/oofatfs/ffunicode.c \
+        help.c \
+        modusocket.c \
+        modutime.c \
+        modzephyr.c \
+        modzsensor.c \
+        modmachine.c \
+        machine_i2c.c \
+        machine_pin.c \
+        modpyb.c    \
+        uart_core.c \
 	$(SRC_MOD)
 
 SRC_QSTR += $(SRC_C_ZEPHYR)
 
-SRC_C = $(SRC_C_ZEPHYR) $(SRC_USBD_MSC_C) $(SRC_CDC_MSC_C) $(SRC_USBD_C) $(SRC_SD_C) $(SRC_USBAPP_C)
+MP_ZEPHYR_DRIVER_C = $(SRC_USBD_MSC_C) $(SRC_CDC_MSC_C) $(SRC_USBD_C) $(SRC_SD_C) $(SRC_USBAPP_C)
 
-OBJ = $(OMV_OBJS) $(PY_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
+MP_ZEPHYR_DRIVER_O = $(addprefix $(BUILD)/, $(MP_ZEPHYR_DRIVER_C:.c=.o))
+
+MP_ZEPHYR_DIRS = $(sort $(dir $(MP_ZEPHYR_DRIVER_O)))
+
+SRC_C = $(SRC_C_ZEPHYR) $(MP_ZEPHYR_DRIVER_C)
+
+MP_ZEPHYR_O = $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
+
+OBJ = $(PY_O) $(OMV_OBJS) $(MP_ZEPHYR_O)
+
 else
 SRC_C = main.c \
 	help.c \
@@ -126,13 +132,28 @@ SRC_QSTR += $(SRC_C)
 OBJ = $(PY_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
 endif
 
+ifeq ($(TFLIGHT), 1)
+OBJ += $(TFLIGHT_OBJS)
+endif
+
 CFLAGS = $(Z_CFLAGS) \
 	 -std=gnu99 -fomit-frame-pointer -DNDEBUG -DMICROPY_HEAP_SIZE=$(MICROPY_HEAP_SIZE) $(CFLAGS_EXTRA) $(INC)
 
 ifeq ($(OMV), 1)
 include $(OPENMV_BASE)/src/omv/mkrules.mk
 endif
+
+ifeq ($(TFLIGHT), 1)
+include $(TFLIGHT_BASE)/tensorflow/contrib/lite/mkrules.mk
+endif
+
 include $(TOP)/py/mkrules.mk
+
+ifeq ($(OMV), 1)
+$(MP_ZEPHYR_O): | $(MP_ZEPHYR_DIRS)
+$(MP_ZEPHYR_DIRS):
+	$(MKDIR) -p $@
+endif
 
 GENERIC_TARGETS = all zephyr run qemu qemugdb flash debug debugserver \
 	ram_report rom_report
@@ -143,7 +164,20 @@ KCONFIG_TARGETS = \
 	listnewconfig olddefconfig
 CLEAN_TARGETS = pristine mrproper
 
+ifeq ($(OMV), 1)
+ifeq ($(TFLIGHT), 1)
+$(GENERIC_TARGETS): $(LIBMICROPYTHON) $(LIBOPENMV) $(LIBTFLIGHT)
+else
+$(GENERIC_TARGETS): $(LIBMICROPYTHON) $(LIBOPENMV)
+endif
+else
+ifeq ($(TFLIGHT), 1)
+$(GENERIC_TARGETS): $(LIBMICROPYTHON) $(LIBTFLIGHT)
+else
 $(GENERIC_TARGETS): $(LIBMICROPYTHON)
+endif
+endif
+
 $(CLEAN_TARGETS):  clean
 
 $(GENERIC_TARGETS) $(KCONFIG_TARGETS) $(CLEAN_TARGETS):
@@ -202,4 +236,10 @@ CFLAGS += -DUSE_DEVICE_MODE
 #workaround for openmv to include STE header
 HAL_INC = '"omv_zephyr_hal.h"'
 CFLAGS += -DSTM32_HAL_H=$(HAL_INC)
+endif
+
+ifeq ($(TFLIGHT), 1)
+TF_CPPFLAGS = $(Z_CPPFLAGS)
+
+$(warning TF_CPPFLAGS: $(TF_CPPFLAGS))
 endif

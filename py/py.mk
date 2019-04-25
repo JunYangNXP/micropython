@@ -263,6 +263,8 @@ PY_CORE_O_BASENAME = $(addprefix py/,\
 	frozenmod.o \
 	)
 
+ifneq ($(OMV), 1)
+
 PY_EXTMOD_O_BASENAME = \
 	extmod/moductypes.o \
 	extmod/modujson.o \
@@ -298,6 +300,52 @@ PY_EXTMOD_O_BASENAME = \
 	extmod/uos_dupterm.o \
 	lib/embed/abort_.o \
 	lib/utils/printf.o \
+
+else
+PY_EXTMOD_O_BASENAME = \
+	extmod/moductypes.o \
+	extmod/modujson.o \
+	extmod/modure.o \
+	extmod/moduzlib.o \
+	extmod/moduheapq.o \
+	extmod/modutimeq.o \
+	extmod/moduhashlib.o \
+	extmod/moducryptolib.o \
+	extmod/modubinascii.o \
+	extmod/virtpin.o \
+	extmod/machine_mem.o \
+	extmod/machine_pinbase.o \
+	extmod/machine_signal.o \
+	extmod/machine_pulse.o \
+	extmod/machine_i2c.o \
+	extmod/machine_spi.o \
+	extmod/modussl_axtls.o \
+	extmod/modussl_mbedtls.o \
+	extmod/modurandom.o \
+	extmod/moduselect.o \
+	extmod/moduwebsocket.o \
+	extmod/modwebrepl.o \
+	extmod/modframebuf.o \
+	extmod/vfs.o \
+	extmod/vfs_reader.o \
+	extmod/vfs_posix.o \
+	extmod/vfs_posix_file.o \
+	extmod/vfs_fat.o \
+	extmod/vfs_fat_diskio.o \
+	extmod/vfs_fat_file.o \
+	extmod/utime_mphal.o \
+	extmod/uos_dupterm.o \
+	lib/embed/abort_.o \
+	lib/utils/printf.o \
+	lib/utils/stdout_helpers.o \
+	lib/utils/pyexec.o \
+	lib/utils/interrupt_char.o \
+	lib/mp-readline/readline.o \
+	lib/oofatfs/ff.o \
+	lib/oofatfs/ffunicode.o \
+	lib/timeutils/timeutils.o \
+
+endif
 
 # prepend the build destination prefix to the py object files
 PY_CORE_O = $(addprefix $(BUILD)/, $(PY_CORE_O_BASENAME))

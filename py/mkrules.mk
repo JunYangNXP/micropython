@@ -88,10 +88,17 @@ $(QSTR_DEFS_COLLECTED): $(HEADER_BUILD)/qstr.split
 # The net effect of this, is it causes the objects to depend on the
 # object directories (but only for existence), and the object directories
 # will be created if they don't exist.
+ifeq ($(OMV), 1)
+PY_O_DIRS = $(sort $(dir $(PY_O)))
+$(PY_O): | $(PY_O_DIRS)
+$(PY_O_DIRS):
+	$(MKDIR) -p $@
+else
 OBJ_DIRS = $(sort $(dir $(OBJ)))
 $(OBJ): | $(OBJ_DIRS)
 $(OBJ_DIRS):
 	$(MKDIR) -p $@
+endif
 
 $(HEADER_BUILD):
 	$(MKDIR) -p $@
@@ -153,8 +160,8 @@ LIBMICROPYTHON = libmicropython.a
 # with 3rd-party projects which don't have proper dependency
 # tracking. Then LIBMICROPYTHON_EXTRA_CMD can e.g. touch some
 # other file to cause needed effect, e.g. relinking with new lib.
-lib $(LIBMICROPYTHON): $(OBJ)
-	$(AR) rcs $(LIBMICROPYTHON) $^
+lib $(LIBMICROPYTHON): $(PY_O) $(MP_ZEPHYR_O) $(OMV_OBJS)
+	$(AR) rcs $(BUILD)/$(LIBMICROPYTHON) $^
 	$(LIBMICROPYTHON_EXTRA_CMD)
 
 clean:
