@@ -730,7 +730,7 @@ typedef double mp_float_t;
 
 // Whether to use internally defined *printf() functions (otherwise external ones)
 #ifndef MICROPY_USE_INTERNAL_PRINTF
-#define MICROPY_USE_INTERNAL_PRINTF (1)
+#define MICROPY_USE_INTERNAL_PRINTF (0)
 #endif
 
 // Support for internal scheduler

@@ -160,7 +160,9 @@ LIBMICROPYTHON = libmicropython.a
 # with 3rd-party projects which don't have proper dependency
 # tracking. Then LIBMICROPYTHON_EXTRA_CMD can e.g. touch some
 # other file to cause needed effect, e.g. relinking with new lib.
-lib $(LIBMICROPYTHON): $(PY_O) $(MP_ZEPHYR_O) $(OMV_OBJS)
+
+$(warning build LIBMICROPYTHON TFLIGHT_OBJS: $(TFLIGHT_OBJS))
+lib $(LIBMICROPYTHON): $(PY_O) $(MP_ZEPHYR_O) $(OMV_OBJS) $(TFLIGHT_OBJS)
 	$(AR) rcs $(BUILD)/$(LIBMICROPYTHON) $^
 	$(LIBMICROPYTHON_EXTRA_CMD)
 

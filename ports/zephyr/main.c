@@ -82,6 +82,8 @@ void init_zephyr(void) {
 extern int omv_main(void);
 #endif
 
+extern int tf_light_main(void);
+
 int real_main(void) {
     int stack_dummy;
     stack_top = (char*)&stack_dummy;
@@ -111,6 +113,8 @@ soft_reset:
     pyexec_frozen_module("main.py");
     #endif
 
+	//while(1);
+	tf_light_main();
 #ifdef OMV_SUPPORT
 	omv_main();
 #endif

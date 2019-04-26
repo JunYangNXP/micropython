@@ -9,7 +9,7 @@
 
 BOARD ?= mimxrt1050_evk
 OMV ?= 1
-TFLIGHT ?= 0
+TFLITE ?= 1
 CONF_FILE = prj_$(BOARD)_merged.conf
 OUTDIR_PREFIX = $(BOARD)
 
@@ -36,8 +36,8 @@ ifeq ($(OMV), 1)
 include $(OPENMV_BASE)/src/omv/omv_zephyr.mk
 endif
 
-ifeq ($(TFLIGHT), 1)
-include $(TFLIGHT_BASE)/tensorflow/contrib/lite/tflight_zephyr.mk
+ifeq ($(TFLITE), 1)
+include $(TFLITE_BASE)/tensorflow/contrib/lite/tflite_zephyr.mk
 endif
 
 # Zephyr (generated) config files - must be defined before include below
@@ -94,6 +94,8 @@ SRC_C_ZEPHYR = main.c \
         uart_core.c \
 	$(SRC_MOD)
 
+TF_TEST_CPP = tf_test.cpp
+
 SRC_QSTR += $(SRC_C_ZEPHYR)
 
 MP_ZEPHYR_DRIVER_C = $(SRC_USBD_MSC_C) $(SRC_CDC_MSC_C) $(SRC_USBD_C) $(SRC_SD_C) $(SRC_USBAPP_C)
@@ -106,7 +108,7 @@ SRC_C = $(SRC_C_ZEPHYR) $(MP_ZEPHYR_DRIVER_C)
 
 MP_ZEPHYR_O = $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
 
-OBJ = $(PY_O) $(OMV_OBJS) $(MP_ZEPHYR_O)
+OBJ = $(PY_O) $(OMV_OBJS) $(MP_ZEPHYR_O) $(TFLITE_OBJS)
 
 else
 SRC_C = main.c \
@@ -132,10 +134,6 @@ SRC_QSTR += $(SRC_C)
 OBJ = $(PY_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
 endif
 
-ifeq ($(TFLIGHT), 1)
-OBJ += $(TFLIGHT_OBJS)
-endif
-
 CFLAGS = $(Z_CFLAGS) \
 	 -std=gnu99 -fomit-frame-pointer -DNDEBUG -DMICROPY_HEAP_SIZE=$(MICROPY_HEAP_SIZE) $(CFLAGS_EXTRA) $(INC)
 
@@ -143,8 +141,8 @@ ifeq ($(OMV), 1)
 include $(OPENMV_BASE)/src/omv/mkrules.mk
 endif
 
-ifeq ($(TFLIGHT), 1)
-include $(TFLIGHT_BASE)/tensorflow/contrib/lite/mkrules.mk
+ifeq ($(TFLITE), 1)
+include $(TFLITE_BASE)/tensorflow/contrib/lite/mkrules.mk
 endif
 
 include $(TOP)/py/mkrules.mk
@@ -152,6 +150,13 @@ include $(TOP)/py/mkrules.mk
 ifeq ($(OMV), 1)
 $(MP_ZEPHYR_O): | $(MP_ZEPHYR_DIRS)
 $(MP_ZEPHYR_DIRS):
+	$(MKDIR) -p $@
+endif
+
+ifeq ($(TFLITE), 1)
+TFLITE_OBJS_DIRS = $(sort $(dir $(TFLITE_OBJS)))
+$(TFLITE_OBJS): | $(TFLITE_OBJS_DIRS)
+$(TFLITE_OBJS_DIRS):
 	$(MKDIR) -p $@
 endif
 
@@ -165,14 +170,14 @@ KCONFIG_TARGETS = \
 CLEAN_TARGETS = pristine mrproper
 
 ifeq ($(OMV), 1)
-ifeq ($(TFLIGHT), 1)
-$(GENERIC_TARGETS): $(LIBMICROPYTHON) $(LIBOPENMV) $(LIBTFLIGHT)
+ifeq ($(TFLITE), 1)
+$(GENERIC_TARGETS): $(LIBMICROPYTHON) $(LIBOPENMV) $(LIBTFLITE)
 else
 $(GENERIC_TARGETS): $(LIBMICROPYTHON) $(LIBOPENMV)
 endif
 else
-ifeq ($(TFLIGHT), 1)
-$(GENERIC_TARGETS): $(LIBMICROPYTHON) $(LIBTFLIGHT)
+ifeq ($(TFLITE), 1)
+$(GENERIC_TARGETS): $(LIBMICROPYTHON) $(LIBTFLITE)
 else
 $(GENERIC_TARGETS): $(LIBMICROPYTHON)
 endif
@@ -238,8 +243,19 @@ HAL_INC = '"omv_zephyr_hal.h"'
 CFLAGS += -DSTM32_HAL_H=$(HAL_INC)
 endif
 
-ifeq ($(TFLIGHT), 1)
-TF_CPPFLAGS = $(Z_CPPFLAGS)
+ifeq ($(TFLITE), 1)
+TF_CPPFLAGS = -I$(TFLITE_BASE)
+TF_CPPFLAGS += -I$(TFLITE_THIRD_PARTY_BASE)/flatbuffers/include
+TF_CPPFLAGS += -I$(TFLITE_THIRD_PARTY_BASE)/gemmlowp
+TF_CPPFLAGS += -I$(TFLITE_THIRD_PARTY_BASE)/farmhash/src
+TF_CPPFLAGS += -I$(TFLITE_THIRD_PARTY_BASE)/eigen
+#TF_CPPFLAGS += -I$(TFLIGHT_BASE)/third_party/flatbuffers/include
+#TF_CPPFLAGS += -I$(TFLIGHT_BASE)/third_party/eigen
+#TF_CPPFLAGS += -I$(TFLIGHT_BASE)/third_party/gemmlowp -I$(TFLIGHT_BASE)/third_party/farmhash
+TF_CPPFLAGS += -DGEMMLOWP_MCU -DTFLITE_MCU -DFARMHASH_MCU
 
-$(warning TF_CPPFLAGS: $(TF_CPPFLAGS))
+TF_CPPFLAGS += -std=gnu++11 -DEIGEN_MPL2_ONLY -DEIGEN_STACK_ALLOCATION_LIMIT=16384 -DFARMHASH_MCU -DFARMHASH_LITTLE_ENDIAN -DFARMHASH_NO_BUILTIN_EXPECT -DFLATBUFFERS_LITTLEENDIAN -DGEMMLOWP_MCU -DTFLITE_MCU -DCPU_MIMXRT1052DVL6B -DCPU_MIMXRT1052DVL6B_cm7 -DSDK_DEBUGCONSOLE=0 -D__MCUXPRESSO -DDEBUG -D__NEWLIB__ -O0 -fno-common -g3 -Wall -fpermissive  -Wno-comment  -Wno-format  -Wno-parentheses  -Wno-sign-compare  -Wno-switch  -Wno-unused-local-typedefs  -Wno-unused-variable  -c  -ffunction-sections  -fdata-sections  -ffreestanding  -fno-builtin  -fno-rtti  -fno-exceptions -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -D__NEWLIB__ -MMD -MP
+
+TF_CPPFLAGS += -I$(OPENMV_BASE)/src/cmsis/include
+
 endif
