@@ -38,7 +38,11 @@
 #include "py/runtime.h"
 #include "py/binary.h"
 #include "py/objarray.h"
+#ifdef CONFIG_FAT_FILESYSTEM_ELM
+#include "ff.h"
+#else
 #include "lib/oofatfs/ff.h"
+#endif
 #include "lib/oofatfs/diskio.h"
 #include "extmod/vfs_fat.h"
 
@@ -48,6 +52,7 @@
 #define SECSIZE(fs) ((fs)->ssize)
 #endif
 
+#ifndef CONFIG_FAT_FILESYSTEM_ELM
 typedef void *bdev_t;
 STATIC fs_user_mount_t *disk_get_device(void *bdev) {
     return (fs_user_mount_t*)bdev;
@@ -56,7 +61,6 @@ STATIC fs_user_mount_t *disk_get_device(void *bdev) {
 /*-----------------------------------------------------------------------*/
 /* Read Sector(s)                                                        */
 /*-----------------------------------------------------------------------*/
-
 DRESULT disk_read (
     bdev_t pdrv,      /* Physical drive nmuber (0..) */
     BYTE *buff,        /* Data buffer to store read data */
@@ -224,5 +228,5 @@ DRESULT disk_ioctl (
             return RES_PARERR;
     }
 }
-
+#endif
 #endif // MICROPY_VFS && MICROPY_VFS_FAT

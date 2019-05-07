@@ -28,8 +28,20 @@
 
 #include "py/lexer.h"
 #include "py/obj.h"
+#include <mp.h>
+#ifdef CONFIG_FAT_FILESYSTEM_ELM
+#include "ff.h"
+#else
 #include "lib/oofatfs/ff.h"
+#endif
 #include "extmod/vfs.h"
+
+#ifndef FF_MAX_SS
+#define FF_MAX_SS _MAX_SS
+#endif
+#ifndef FF_MIN_SS
+#define FF_MIN_SS _MIN_SS
+#endif
 
 // these are the values for fs_user_mount_t.flags
 #define FSUSER_NATIVE       (0x0001) // readblocks[2]/writeblocks[2] contain native func

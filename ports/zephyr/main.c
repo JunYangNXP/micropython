@@ -82,7 +82,9 @@ void init_zephyr(void) {
 extern int omv_main(void);
 #endif
 
-extern int tf_light_main(void);
+#ifdef TFLITE
+extern void tf_lite_main(void);
+#endif
 
 int real_main(void) {
     int stack_dummy;
@@ -109,12 +111,13 @@ soft_reset:
     mp_obj_list_append(mp_sys_path, MP_OBJ_NEW_QSTR(MP_QSTR_)); // current dir (or base dir of the script)
     mp_obj_list_init(mp_sys_argv, 0);
 
-    #if MICROPY_MODULE_FROZEN
+#if MICROPY_MODULE_FROZEN
     pyexec_frozen_module("main.py");
-    #endif
+#endif
 
-	//while(1);
-	tf_light_main();
+#ifdef TFLITE
+	tf_lite_main();
+#endif
 #ifdef OMV_SUPPORT
 	omv_main();
 #endif

@@ -31,8 +31,10 @@
 #include "py/mphal.h"
 #ifdef CONFIG_FAT_FILESYSTEM_ELM
 #include "ff.h"
-#endif
+#include "extmod/vfs.h"
+#else
 #include "extmod/vfs_fat.h"
+#endif
 #include "fsl_sdmmc/fsl_sd.h"
 #include "sdcard.h"
 
@@ -206,6 +208,7 @@ STATIC const mp_rom_map_elem_t pyb_sdcard_locals_dict_table[] = {
 		MP_ROM_QSTR(MP_QSTR_write),
 		MP_ROM_PTR(&sd_write_obj)
 	},
+#ifndef CONFIG_FAT_FILESYSTEM_ELM
 	{
 		MP_ROM_QSTR(MP_QSTR_readblocks),
 		MP_ROM_PTR(&pyb_sdcard_readblocks_obj)
@@ -214,6 +217,7 @@ STATIC const mp_rom_map_elem_t pyb_sdcard_locals_dict_table[] = {
 		MP_ROM_QSTR(MP_QSTR_writeblocks),
 		MP_ROM_PTR(&pyb_sdcard_writeblocks_obj)
 	},
+#endif
 	{
 		MP_ROM_QSTR(MP_QSTR_ioctl),
 		MP_ROM_PTR(&pyb_sdcard_ioctl_obj)
@@ -229,6 +233,7 @@ const mp_obj_type_t pyb_sdcard_type = {
 	.locals_dict = (mp_obj_dict_t *)&pyb_sdcard_locals_dict,
 };
 
+#ifndef CONFIG_FAT_FILESYSTEM_ELM
 void sdcard_init_vfs(fs_user_mount_t *vfs, int drv)
 {
 	vfs->base.type = &mp_fat_vfs_type;
@@ -248,4 +253,5 @@ void sdcard_init_vfs(fs_user_mount_t *vfs, int drv)
 	vfs->u.ioctl[0] = (mp_obj_t)&pyb_sdcard_ioctl_obj;
 	vfs->u.ioctl[1] = (mp_obj_t)&pyb_sdcard_obj;
 }
+#endif
 #endif

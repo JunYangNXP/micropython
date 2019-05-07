@@ -32,7 +32,11 @@
 #include "py/runtime.h"
 #include "py/stream.h"
 #include "py/mperrno.h"
+#ifdef CONFIG_FAT_FILESYSTEM_ELM
+#include "ff.h"
+#else
 #include "lib/oofatfs/ff.h"
+#endif
 #include "extmod/vfs_fat.h"
 
 // this table converts from FRESULT to POSIX errno
@@ -197,7 +201,11 @@ STATIC mp_obj_t file_open(fs_user_mount_t *vfs, const mp_obj_type_t *type, mp_ar
 
     const char *fname = mp_obj_str_get_str(args[0].u_obj);
     assert(vfs != NULL);
+#ifdef CONFIG_FAT_FILESYSTEM_ELM
+	FRESULT res = f_open(&o->fp, fname, mode);
+#else
     FRESULT res = f_open(&vfs->fatfs, &o->fp, fname, mode);
+#endif
     if (res != FR_OK) {
         m_del_obj(pyb_file_obj_t, o);
         mp_raise_OSError(fresult_to_errno_table[res]);
