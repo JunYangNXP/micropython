@@ -205,8 +205,13 @@ z_clean:
 # can be overriden.
 # prj_$(BOARD).conf is optional, that's why it's resolved with $(wildcard)
 # function.
+ifeq ($(OMV), 1)
+prj_$(BOARD)_merged.conf: prj_omv_base.conf $(wildcard prj_$(BOARD).conf)
+	$(PYTHON) makeprj.py prj_omv_base.conf prj_$(BOARD).conf $@
+else
 prj_$(BOARD)_merged.conf: prj_base.conf $(wildcard prj_$(BOARD).conf)
 	$(PYTHON) makeprj.py prj_base.conf prj_$(BOARD).conf $@
+endif
 
 test:
 	cd $(TOP)/tests && ./run-tests --target minimal --device "execpty:make -C ../ports/zephyr run BOARD=$(BOARD) QEMU_PTY=1"
