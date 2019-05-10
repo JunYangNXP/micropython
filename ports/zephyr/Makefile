@@ -255,6 +255,9 @@ TF_CPPFLAGS += -I$(TFLITE_THIRD_PARTY_BASE)/flatbuffers/include
 TF_CPPFLAGS += -I$(TFLITE_THIRD_PARTY_BASE)/gemmlowp
 TF_CPPFLAGS += -I$(TFLITE_THIRD_PARTY_BASE)/farmhash/src
 TF_CPPFLAGS += -I$(TFLITE_THIRD_PARTY_BASE)/eigen
+TF_CPPFLAGS += -I$(ZEPHYR_BASE)/include
+TF_CPPFLAGS += -I$(PWD)/outdir/$(OUTDIR_PREFIX)/zephyr/include/generated
+TF_CPPFLAGS += -I$(ZEPHYR_BASE)/ext/fs/fat/include
 
 TF_CFLAGS = -I$(TFLITE_BASE)
 TF_CFLAGS += -I$(TFLITE_THIRD_PARTY_BASE)/flatbuffers/include

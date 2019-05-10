@@ -82,10 +82,6 @@ void init_zephyr(void) {
 extern int omv_main(void);
 #endif
 
-#ifdef TFLITE
-extern void tf_lite_main(void);
-#endif
-
 int real_main(void) {
     int stack_dummy;
     stack_top = (char*)&stack_dummy;
@@ -115,9 +111,6 @@ soft_reset:
     pyexec_frozen_module("main.py");
 #endif
 
-#ifdef TFLITE
-	tf_lite_main();
-#endif
 #ifdef OMV_SUPPORT
 	omv_main();
 #endif

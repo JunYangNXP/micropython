@@ -132,6 +132,7 @@ STATIC mp_obj_t sd_write(mp_obj_t self, mp_obj_t block_num, mp_obj_t data)
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_3(sd_write_obj, sd_write);
 
+#ifndef CONFIG_FAT_FILESYSTEM_ELM
 STATIC mp_obj_t pyb_sdcard_readblocks(mp_obj_t self,
 	mp_obj_t block_num, mp_obj_t buf)
 {
@@ -155,6 +156,7 @@ STATIC mp_obj_t pyb_sdcard_writeblocks(mp_obj_t self,
 	return mp_obj_new_bool(ret == 0);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_3(pyb_sdcard_writeblocks_obj, pyb_sdcard_writeblocks);
+#endif
 
 STATIC mp_obj_t pyb_sdcard_ioctl(mp_obj_t self, mp_obj_t cmd_in,
 	mp_obj_t arg_in)
