@@ -246,30 +246,33 @@ CFLAGS += -DUSE_DEVICE_MODE
 #workaround for openmv to include STE header
 HAL_INC = '"omv_zephyr_hal.h"'
 CFLAGS += -DSTM32_HAL_H=$(HAL_INC)
+CFLAGS += -Wno-strict-aliasing
 endif
 
 ifeq ($(TFLITE), 1)
 CFLAGS += -DTFLITE
 TF_CPPFLAGS = -I$(TFLITE_BASE)
-TF_CPPFLAGS += -I$(TFLITE_THIRD_PARTY_BASE)/flatbuffers/include
-TF_CPPFLAGS += -I$(TFLITE_THIRD_PARTY_BASE)/gemmlowp
-TF_CPPFLAGS += -I$(TFLITE_THIRD_PARTY_BASE)/farmhash/src
-TF_CPPFLAGS += -I$(TFLITE_THIRD_PARTY_BASE)/eigen
+TF_CPPFLAGS += -I$(TFLITE_MCU_THIRD_PARTY_BASE)
+TF_CPPFLAGS += -I$(TFLITE_MCU_THIRD_PARTY_BASE)/gemmlowp
+TF_CPPFLAGS += -I$(TFLITE_MCU_THIRD_PARTY_BASE)/farmhash/src
+TF_CPPFLAGS += -I$(TFLITE_MCU_THIRD_PARTY_BASE)/eigen
 TF_CPPFLAGS += -I$(ZEPHYR_BASE)/include
 TF_CPPFLAGS += -I$(PWD)/outdir/$(OUTDIR_PREFIX)/zephyr/include/generated
 TF_CPPFLAGS += -I$(ZEPHYR_BASE)/ext/fs/fat/include
 
 TF_CFLAGS = -I$(TFLITE_BASE)
 TF_CFLAGS += -I$(TFLITE_THIRD_PARTY_BASE)/flatbuffers/include
-TF_CFLAGS += -I$(TFLITE_THIRD_PARTY_BASE)/gemmlowp
-TF_CFLAGS += -I$(TFLITE_THIRD_PARTY_BASE)/farmhash/src
-TF_CFLAGS += -I$(TFLITE_THIRD_PARTY_BASE)/eigen
+TF_CFLAGS += -I$(TFLITE_MCU_THIRD_PARTY_BASE)/gemmlowp
+TF_CFLAGS += -I$(TFLITE_MCU_THIRD_PARTY_BASE)/farmhash/src
+TF_CFLAGS += -I$(TFLITE_MCU_THIRD_PARTY_BASE)/eigen
 
 TF_CPPFLAGS += -DGEMMLOWP_MCU -DTFLITE_MCU -DFARMHASH_MCU -DTFLITE
 
 TF_CFLAGS += -DGEMMLOWP_MCU -DTFLITE_MCU -DFARMHASH_MCU -DTFLITE
 
 TF_CPPFLAGS += -std=gnu++11 -DEIGEN_MPL2_ONLY -DEIGEN_STACK_ALLOCATION_LIMIT=16384 -DFARMHASH_MCU -DFARMHASH_LITTLE_ENDIAN -DFARMHASH_NO_BUILTIN_EXPECT -DFLATBUFFERS_LITTLEENDIAN -DGEMMLOWP_MCU -DTFLITE_MCU -D__NEWLIB__ -O0 -fno-common -g3 -Wall -fpermissive  -Wno-comment  -Wno-format  -Wno-parentheses  -Wno-sign-compare  -Wno-switch  -Wno-unused-local-typedefs  -Wno-unused-variable  -c  -ffunction-sections  -fdata-sections  -ffreestanding  -fno-builtin  -fno-rtti  -fno-exceptions -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -D__NEWLIB__ -MMD -MP
+
+TF_CPPFLAGS += -Wno-psabi
 
 TF_CFLAGS += -DEIGEN_MPL2_ONLY -DEIGEN_STACK_ALLOCATION_LIMIT=16384 -DFARMHASH_MCU -DFARMHASH_LITTLE_ENDIAN -DFARMHASH_NO_BUILTIN_EXPECT -DFLATBUFFERS_LITTLEENDIAN -DGEMMLOWP_MCU -DTFLITE_MCU -D__NEWLIB__ -O0 -fno-common -g3 -Wall -Wno-comment  -Wno-format  -Wno-parentheses  -Wno-sign-compare  -Wno-switch  -Wno-unused-local-typedefs  -Wno-unused-variable  -c  -ffunction-sections  -fdata-sections  -ffreestanding  -fno-builtin -fno-exceptions -mcpu=cortex-m7 -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -D__NEWLIB__ -MMD -MP
 
